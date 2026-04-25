@@ -1,250 +1,1030 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Claude AI + SAP ABAP via MCP</title>
+    <title>AI-Agenten für SAP CRUD — drei Pfade für FSI-Kunden</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        --primary: #2563eb;
-        --bg: #f8fafc;
-        --text: #1e293b;
-        --card: #ffffff;
-        --border: #e2e8f0;
+        --bg: #faf8f3;
+        --paper: #ffffff;
+        --ink: #1a1814;
+        --ink-soft: #4a463f;
+        --ink-mute: #8b847a;
+        --ink-faint: #c4beb3;
+        --rule: #e5dfd3;
+        --hairline: #efeae0;
+
+        --p1: #0f5159;
+        --p1-soft: #e8f0f1;
+        --p2: #1b2d52;
+        --p2-soft: #e8ebf2;
+        --p3: #b85042;
+        --p3-soft: #f6e8e5;
+
+        --serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+        --sans:
+          "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
       }
 
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      html {
+        scroll-behavior: smooth;
       }
 
       body {
         background: var(--bg);
-        color: var(--text);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 16px;
         line-height: 1.6;
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
       }
 
-      header {
-        padding: 60px 20px;
-        text-align: center;
-        background: linear-gradient(135deg, #e0f2fe, #ffffff);
-        border-bottom: 1px solid var(--border);
+      /* paper grain overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.18 0 0 0 0 0.15 0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        opacity: 0.6;
+        mix-blend-mode: multiply;
       }
 
-      header h1 {
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-      }
-
-      header p {
-        color: #64748b;
-        max-width: 700px;
+      .wrap {
+        max-width: 1240px;
         margin: 0 auto;
+        padding: 0 56px;
+        position: relative;
+        z-index: 2;
       }
 
-      .container {
-        max-width: 1000px;
-        margin: auto;
-        padding: 40px 20px;
+      @media (max-width: 720px) {
+        .wrap {
+          padding: 0 24px;
+        }
       }
 
-      .section {
-        margin-bottom: 40px;
+      /* ==================== HEADER ==================== */
+      header {
+        padding: 36px 0 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--rule);
       }
 
-      .section h2 {
-        margin-bottom: 15px;
-        color: var(--primary);
+      .brand {
+        font-family: var(--serif);
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        color: var(--ink);
       }
 
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 20px;
+      .brand em {
+        font-style: italic;
+        color: var(--p1);
+        font-weight: 400;
       }
 
-      code,
-      pre {
-        background: #0f172a;
-        color: #e2e8f0;
-        padding: 10px;
-        border-radius: 8px;
+      .meta {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--ink-mute);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      /* ==================== HERO ==================== */
+      .hero {
+        padding: 100px 0 80px;
+        position: relative;
+      }
+
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--p3);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        opacity: 0;
+        animation: rise 0.7s 0.1s ease-out forwards;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 32px;
+        height: 1px;
+        background: var(--p3);
+      }
+
+      .hero h1 {
+        font-family: var(--serif);
+        font-size: clamp(44px, 6.5vw, 88px);
+        font-weight: 400;
+        line-height: 1.02;
+        letter-spacing: -0.025em;
+        color: var(--ink);
+        max-width: 18ch;
+        margin-bottom: 36px;
+        opacity: 0;
+        animation: rise 0.9s 0.2s ease-out forwards;
+      }
+
+      .hero h1 em {
+        font-style: italic;
+        font-weight: 300;
+        color: var(--p1);
+      }
+
+      .hero-lead {
+        max-width: 64ch;
+        font-size: 19px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+        font-weight: 400;
+        opacity: 0;
+        animation: rise 0.9s 0.35s ease-out forwards;
+      }
+
+      .hero-lead strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      /* decorative serial number */
+      .hero-mark {
+        position: absolute;
+        top: 110px;
+        right: 0;
+        font-family: var(--serif);
+        font-size: 14px;
+        font-weight: 300;
+        font-style: italic;
+        color: var(--ink-faint);
+        text-align: right;
+        line-height: 1.4;
+        opacity: 0;
+        animation: rise 0.9s 0.5s ease-out forwards;
+      }
+
+      .hero-mark span {
         display: block;
+        font-family: var(--mono);
+        font-style: normal;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink-mute);
+        margin-bottom: 6px;
+      }
+
+      @media (max-width: 720px) {
+        .hero {
+          padding: 60px 0 50px;
+        }
+        .hero-mark {
+          display: none;
+        }
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ==================== QUESTION PULL ==================== */
+      .pull {
+        padding: 60px 0 80px;
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+        margin-bottom: 100px;
+        position: relative;
+      }
+
+      .pull-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--ink-mute);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+      }
+
+      .pull-text {
+        font-family: var(--serif);
+        font-size: clamp(24px, 3.2vw, 38px);
+        font-weight: 300;
+        font-style: italic;
+        line-height: 1.3;
+        color: var(--ink);
+        max-width: 28ch;
+        letter-spacing: -0.015em;
+      }
+
+      .pull-text mark {
+        background: linear-gradient(
+          180deg,
+          transparent 60%,
+          var(--p3-soft) 60%
+        );
+        color: var(--ink);
+        padding: 0 4px;
+      }
+
+      /* ==================== PFADE ==================== */
+      .pfade {
+        margin-bottom: 120px;
+      }
+
+      .section-title {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--ink-mute);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        margin-bottom: 60px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .section-title::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--rule);
+      }
+
+      .pfad {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 60px;
+        padding: 60px 0;
+        border-top: 1px solid var(--rule);
+        position: relative;
+      }
+
+      .pfad:last-child {
+        border-bottom: 1px solid var(--rule);
+      }
+
+      @media (max-width: 880px) {
+        .pfad {
+          grid-template-columns: 1fr;
+          gap: 32px;
+          padding: 48px 0;
+        }
+      }
+
+      .pfad-num {
+        font-family: var(--serif);
+        font-size: 96px;
+        font-weight: 300;
+        line-height: 1;
+        color: var(--accent);
+        letter-spacing: -0.04em;
+        position: relative;
+      }
+
+      .pfad-num::after {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: -56px;
+        width: 40px;
+        height: 1px;
+        background: var(--accent);
+      }
+
+      @media (max-width: 880px) {
+        .pfad-num {
+          font-size: 64px;
+        }
+        .pfad-num::after {
+          display: none;
+        }
+      }
+
+      .pfad-tag {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+
+      .pfad-title {
+        font-family: var(--serif);
+        font-size: clamp(30px, 3.6vw, 44px);
+        font-weight: 400;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin-bottom: 6px;
+      }
+
+      .pfad-subtitle {
+        font-family: var(--serif);
+        font-size: 18px;
+        font-weight: 300;
+        font-style: italic;
+        color: var(--ink-mute);
+        margin-bottom: 32px;
+      }
+
+      .pfad-arch {
+        font-family: var(--mono);
+        font-size: 12.5px;
+        line-height: 1.7;
+        color: var(--ink);
+        background: var(--paper);
+        border: 1px solid var(--rule);
+        border-left: 2px solid var(--accent);
+        padding: 18px 22px;
+        margin-bottom: 36px;
         overflow-x: auto;
-        margin-top: 10px;
-        font-size: 0.9rem;
       }
 
-      ul {
-        margin-left: 20px;
-        margin-top: 10px;
+      .pfad-arch::before {
+        content: "Architektur";
+        display: block;
+        font-family: var(--sans);
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink-mute);
+        margin-bottom: 8px;
+        font-weight: 500;
       }
 
-      footer {
-        text-align: center;
-        padding: 30px;
-        color: #64748b;
-        border-top: 1px solid var(--border);
+      .pfad-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
+      }
+
+      @media (max-width: 600px) {
+        .pfad-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .pfad-item {
+        padding: 18px 0;
+        border-top: 1px solid var(--hairline);
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 16px;
+        align-items: baseline;
+      }
+
+      .pfad-item:nth-child(odd) {
+        padding-right: 32px;
+      }
+
+      .pfad-item:nth-child(even) {
+        padding-left: 32px;
+        border-left: 1px solid var(--hairline);
+      }
+
+      @media (max-width: 600px) {
+        .pfad-item:nth-child(even) {
+          padding-left: 0;
+          border-left: none;
+        }
+        .pfad-item:nth-child(odd) {
+          padding-right: 0;
+        }
+      }
+
+      .pfad-key {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 500;
+      }
+
+      .pfad-val {
+        font-size: 14.5px;
+        line-height: 1.5;
+        color: var(--ink);
+      }
+
+      .pfad-fit {
+        margin-top: 36px;
+        padding: 22px 26px;
+        background: var(--accent-soft);
+        border-radius: 2px;
+        display: flex;
+        align-items: baseline;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .pfad-fit-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+
+      .pfad-fit-text {
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 17px;
+        color: var(--ink);
+        line-height: 1.4;
+      }
+
+      /* per-pfad accent variables */
+      .pfad-1 {
+        --accent: var(--p1);
+        --accent-soft: var(--p1-soft);
+      }
+      .pfad-2 {
+        --accent: var(--p2);
+        --accent-soft: var(--p2-soft);
+      }
+      .pfad-3 {
+        --accent: var(--p3);
+        --accent-soft: var(--p3-soft);
+      }
+
+      /* ==================== EMPFEHLUNG ==================== */
+      .empfehlung {
+        background: var(--ink);
+        color: #faf8f3;
+        margin: 0 -56px;
+        padding: 100px 56px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      @media (max-width: 720px) {
+        .empfehlung {
+          margin: 0 -24px;
+          padding: 60px 24px;
+        }
+      }
+
+      .empfehlung::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(184, 80, 66, 0.18) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .empfehlung-inner {
+        max-width: 1240px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .empfehlung-eyebrow {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--p3);
+        margin-bottom: 32px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .empfehlung-eyebrow::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        background: var(--p3);
+        border-radius: 50%;
+      }
+
+      .empfehlung h2 {
+        font-family: var(--serif);
+        font-size: clamp(34px, 4.5vw, 56px);
+        font-weight: 300;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin-bottom: 60px;
+        max-width: 22ch;
+      }
+
+      .empfehlung h2 em {
+        font-style: italic;
+        color: #e8b5a8;
+      }
+
+      .recc-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 48px;
+      }
+
+      @media (max-width: 880px) {
+        .recc-grid {
+          grid-template-columns: 1fr;
+          gap: 36px;
+        }
+      }
+
+      .recc-item {
+        padding-top: 20px;
+        border-top: 1px solid rgba(250, 248, 243, 0.18);
+      }
+
+      .recc-num {
+        font-family: var(--serif);
+        font-size: 14px;
+        font-style: italic;
+        color: var(--ink-faint);
+        margin-bottom: 14px;
+      }
+
+      .recc-title {
+        font-family: var(--serif);
+        font-size: 22px;
+        font-weight: 500;
+        line-height: 1.25;
+        margin-bottom: 12px;
+        color: #faf8f3;
+      }
+
+      .recc-text {
+        font-size: 14.5px;
+        line-height: 1.6;
+        color: rgba(250, 248, 243, 0.72);
+      }
+
+      /* ==================== GUARDRAILS NOTE ==================== */
+      .guardrails {
+        padding: 100px 0 80px;
+      }
+
+      .guardrails h3 {
+        font-family: var(--serif);
+        font-size: clamp(26px, 3vw, 36px);
+        font-weight: 400;
+        font-style: italic;
+        line-height: 1.25;
+        letter-spacing: -0.015em;
+        margin-bottom: 36px;
+        max-width: 24ch;
+        color: var(--ink);
+      }
+
+      .guardrails-list {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 28px;
         margin-top: 40px;
       }
 
-      .badge {
-        display: inline-block;
-        background: #dbeafe;
-        color: var(--primary);
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        margin: 5px 5px 0 0;
+      @media (max-width: 880px) {
+        .guardrails-list {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 520px) {
+        .guardrails-list {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .guardrail {
+        padding-top: 18px;
+        border-top: 2px solid var(--ink);
+      }
+
+      .guardrail-num {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        color: var(--ink-mute);
+        margin-bottom: 10px;
+      }
+
+      .guardrail-title {
+        font-family: var(--serif);
+        font-size: 17px;
+        font-weight: 500;
+        line-height: 1.3;
+        margin-bottom: 8px;
+        color: var(--ink);
+      }
+
+      .guardrail-text {
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+      }
+
+      /* ==================== FOOTER ==================== */
+      footer {
+        padding: 50px 0 60px;
+        border-top: 1px solid var(--rule);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 24px;
+      }
+
+      .foot-left {
+        font-family: var(--serif);
+        font-size: 15px;
+        font-style: italic;
+        color: var(--ink-soft);
+      }
+
+      .foot-right {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-mute);
+      }
+
+      /* selection */
+      ::selection {
+        background: var(--p3);
+        color: #faf8f3;
       }
     </style>
   </head>
   <body>
-    <header>
-      <h1>Claude AI + SAP ABAP via MCP</h1>
-      <p>
-        Connect Claude AI directly to your SAP system using MCP (Model Context
-        Protocol) — read, modify, and manage ABAP objects via natural language.
-      </p>
-    </header>
+    <div class="wrap">
+      <header>
+        <div class="brand">L. Limadaev <em>·</em> x1F</div>
+        <div class="meta">Memo / 04 · 2026</div>
+      </header>
 
-    <div class="container">
-      <div class="section">
-        <h2>🚀 What is MCP?</h2>
-        <div class="card">
-          <p>
-            MCP (Model Context Protocol) allows AI models to interact with real
-            systems.
-          </p>
-          <ul>
-            <li>Read ABAP code</li>
-            <li>Modify objects</li>
-            <li>Create transports</li>
-            <li>Run syntax checks</li>
-          </ul>
+      <!-- HERO -->
+      <section class="hero">
+        <div class="eyebrow">Architektur-Memo · Treasury / IFRS 9</div>
+        <h1>AI-Agenten für SAP CRUD — <em>drei Pfade</em> für FSI-Kunden.</h1>
+        <p class="hero-lead">
+          <strong>S/4HANA Private Cloud, ECC, Treasury Risk Management.</strong>
+          Drei sehr unterschiedliche Architektur-Pfade führen zur gleichen
+          Endauswirkung — ein Agent, der Buchungen liest und schreibt. Der Pfad
+          bestimmt Lizenzkosten, Audit-Story, Vendor-Lock und
+          Time-to-Production. Nicht das Frontend.
+        </p>
+        <div class="hero-mark">
+          <span>Stand</span>
+          Saturday, 25 April 2026<br />
+          Adelshofen, BY
         </div>
-      </div>
+      </section>
 
-      <div class="section">
-        <h2>🏗 Architecture</h2>
-        <div class="card">
-          <p>
-            <strong>Claude ↔ MCP Servers ↔ SAP ADT API ↔ SAP System</strong>
-          </p>
-          <ul>
-            <li>mcp-abap-adt → Read-only</li>
-            <li>mcp-abap-abap-adt-api → Full CRUD</li>
-          </ul>
+      <!-- LEAD QUESTION -->
+      <section class="pull">
+        <div class="pull-label">Die Frage</div>
+        <div class="pull-text">
+          Wie verbinden wir AI-Agenten mit SAP-Backends unserer FSI-Klientel —
+          auch
+          <em>on-prem &amp; PCE</em> — so, dass
+          <mark>CRUD audit-fest läuft?</mark>
         </div>
-      </div>
+      </section>
 
-      <div class="section">
-        <h2>📦 Prerequisites</h2>
-        <div class="card">
-          <ul>
-            <li>Windows 10/11</li>
-            <li>SAP system with ADT enabled</li>
-            <li>SAP_ADT_DEVELOPER role</li>
-            <li>Claude subscription</li>
-          </ul>
-        </div>
-      </div>
+      <!-- PFADE -->
+      <section class="pfade">
+        <div class="section-title">Drei Pfade</div>
 
-      <div class="section">
-        <h2>⚙️ Installation</h2>
+        <!-- PFAD 1 -->
+        <article class="pfad pfad-1">
+          <div class="pfad-num">01</div>
+          <div>
+            <div class="pfad-tag">SAP-nativ</div>
+            <h2 class="pfad-title">Joule + MCP Gateway</h2>
+            <div class="pfad-subtitle">via SAP Integration Suite</div>
 
-        <div class="card">
-          <h3>1. Install Node.js</h3>
-          <pre>
-node -v
-npm -v</pre
-          >
-        </div>
+            <div class="pfad-arch">
+              Joule Studio Agent &nbsp;→&nbsp; MCP Gateway (IS) &nbsp;→&nbsp;
+              Cloud Connector &nbsp;→&nbsp; S/4HANA
+            </div>
 
-        <div class="card">
-          <h3>2. Install Claude CLI</h3>
-          <pre>
-npm install -g @anthropic-ai/claude-code
-claude</pre
-          >
-        </div>
+            <div class="pfad-grid">
+              <div class="pfad-item">
+                <span class="pfad-key">Wann</span
+                ><span class="pfad-val"
+                  >IS-Lizenz + Joule, S/4 PCE, AI-Roadmap definiert</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Aufwand</span
+                ><span class="pfad-val"
+                  >Mittel · Skill/Action pro Use Case, Tool-Spec im
+                  Gateway</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Identity</span
+                ><span class="pfad-val"
+                  >Principal Propagation, Audit-Trail über BTP / CALM</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Lock-in</span
+                ><span class="pfad-val">Hoch — voll im SAP-Stack</span>
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Risiko</span
+                ><span class="pfad-val"
+                  >Lizenzkosten IS + Joule, Latenz durch zwei Hops</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Stärke</span
+                ><span class="pfad-val"
+                  >Strategisch sauberster SAP-Pfad, von SAP investiert</span
+                >
+              </div>
+            </div>
 
-        <div class="card">
-          <h3>3. Clone MCP Server</h3>
-          <pre>
-git clone https://github.com/mario-andreschak/mcp-abap-adt
-cd mcp-abap-adt
-npm install
-npm run build</pre
-          >
-        </div>
+            <div class="pfad-fit">
+              <span class="pfad-fit-label">Best Fit</span>
+              <span class="pfad-fit-text"
+                >Großbanken &amp; Versicherer mit BTP-Strategie und
+                Joule-Lizenz.</span
+              >
+            </div>
+          </div>
+        </article>
 
-        <div class="card">
-          <h3>4. Example .env</h3>
-          <pre>
-SAP_URL=https://your-system
-SAP_USERNAME=USER
-SAP_PASSWORD=PASS
-SAP_CLIENT=300</pre
-          >
-        </div>
-      </div>
+        <!-- PFAD 2 -->
+        <article class="pfad pfad-2">
+          <div class="pfad-num">02</div>
+          <div>
+            <div class="pfad-tag">In-System</div>
+            <h2 class="pfad-title">ABAP MCP-Add-on</h2>
+            <div class="pfad-subtitle">MCP-Server direkt im SAP-System</div>
 
-      <div class="section">
-        <h2>💻 Claude Desktop Config</h2>
-        <div class="card">
-          <pre>
-{
-  "mcpServers": {
-    "mcp-abap-adt": {
-      "command": "C:\\Program Files\\nodejs\\node.exe",
-      "args": ["C:\\Tools\\mcp-abap-adt\\dist\\index.js"]
-    }
-  }
-}</pre
-          >
-        </div>
-      </div>
+            <div class="pfad-arch">
+              Agent (Claude / Copilot / Joule) &nbsp;→&nbsp; SICF-Endpoint
+              &nbsp;→&nbsp; ABAP-Tools auf RAP / BAPIs
+            </div>
 
-      <div class="section">
-        <h2>🧪 Test Commands</h2>
-        <div class="card">
-          <pre>Get the source code of program SAPMV45A</pre>
-          <pre>Modify a Z program and activate it</pre>
-        </div>
-      </div>
+            <div class="pfad-grid">
+              <div class="pfad-item">
+                <span class="pfad-key">Wann</span
+                ><span class="pfad-val"
+                  >ECC oder S/4 PCE ohne IS, schlanke Architektur,
+                  kostensensitiv</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Aufwand</span
+                ><span class="pfad-val"
+                  >Niedrig–Mittel · Add-on installieren +
+                  RAP-/BAPI-Wrapper</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Identity</span
+                ><span class="pfad-val"
+                  >Klassische ABAP-Berechtigungen — kein zusätzlicher
+                  Layer</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Lock-in</span
+                ><span class="pfad-val"
+                  >Niedrig — Agent-Wahl frei (MCP-Standard)</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Risiko</span
+                ><span class="pfad-val"
+                  >SICF-Hardening Pflicht; Add-on-Support muss geklärt
+                  werden</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Stärke</span
+                ><span class="pfad-val"
+                  >Funktioniert ab 7.01; kürzeste Latenz; Tools beim
+                  Datenmodell</span
+                >
+              </div>
+            </div>
 
-      <div class="section">
-        <h2>🔐 Security Notes</h2>
-        <div class="card">
-          <ul>
-            <li>Never commit .env files</li>
-            <li>Use dedicated service users</li>
-            <li>Test only in $TMP first</li>
-            <li>Review AI-generated code</li>
-          </ul>
-        </div>
-      </div>
+            <div class="pfad-fit">
+              <span class="pfad-fit-label">Best Fit</span>
+              <span class="pfad-fit-text"
+                >Sparkassen, VR-Banken, Mittelstand-Versicherer ohne
+                BTP-Investment.</span
+              >
+            </div>
+          </div>
+        </article>
 
-      <div class="section">
-        <h2>🏷 Tags</h2>
-        <div class="card">
-          <span class="badge">ABAP</span>
-          <span class="badge">SAP</span>
-          <span class="badge">AI</span>
-          <span class="badge">Claude</span>
-          <span class="badge">MCP</span>
-        </div>
-      </div>
+        <!-- PFAD 3 -->
+        <article class="pfad pfad-3">
+          <div class="pfad-num">03</div>
+          <div>
+            <div class="pfad-tag">Custom</div>
+            <h2 class="pfad-title">Externer MCP-Server</h2>
+            <div class="pfad-subtitle">
+              Python / Node, OData &amp; RFC zu SAP
+            </div>
+
+            <div class="pfad-arch">
+              Agent &nbsp;→&nbsp; Python MCP-Server (Container) &nbsp;→&nbsp;
+              PyRFC / OData &nbsp;→&nbsp; SAP
+            </div>
+
+            <div class="pfad-grid">
+              <div class="pfad-item">
+                <span class="pfad-key">Wann</span
+                ><span class="pfad-val"
+                  >PoCs, Demos, Sales-Vehikel, Wrapper für eigene IP</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Aufwand</span
+                ><span class="pfad-val"
+                  >Niedrig (Demo) · Mittel (Prod — Idempotenz, Audit
+                  selbst)</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Identity</span
+                ><span class="pfad-val"
+                  >Service-User oder OAuth-Tausch, selbst zu modellieren</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Lock-in</span
+                ><span class="pfad-val"
+                  >Sehr niedrig — Modell, Agent &amp; Hosting frei wählbar</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Risiko</span
+                ><span class="pfad-val"
+                  >Eigener Betriebsstrang; Compliance-Story
+                  handgeschrieben</span
+                >
+              </div>
+              <div class="pfad-item">
+                <span class="pfad-key">Stärke</span
+                ><span class="pfad-val"
+                  >Maximale Freiheit; reife SDKs; ECL-Engine als Demo
+                  wrapbar</span
+                >
+              </div>
+            </div>
+
+            <div class="pfad-fit">
+              <span class="pfad-fit-label">Best Fit</span>
+              <span class="pfad-fit-text"
+                >CFO-Sales-PoCs &amp; eigener Produktstrang um die ECL Posting
+                Engine.</span
+              >
+            </div>
+          </div>
+        </article>
+      </section>
     </div>
 
-    <footer>
-      <p>Built as a lightweight Onepager for SAP + AI integration 🚀</p>
-    </footer>
+    <!-- EMPFEHLUNG -->
+    <section class="empfehlung">
+      <div class="empfehlung-inner">
+        <div class="empfehlung-eyebrow">Empfehlung x1F</div>
+        <h2>
+          Zwei-Spur-Setup. <em>Productisable Add-on</em> für die Mehrheit,
+          Demo-Vehikel für die Spitze.
+        </h2>
+
+        <div class="recc-grid">
+          <div class="recc-item">
+            <div class="recc-num">i.</div>
+            <div class="recc-title">Pfad 2 als Asset</div>
+            <div class="recc-text">
+              ABAP-Add-on mit kuratiertem RAP-/BAPI-Tool-Katalog für Treasury
+              und IFRS 9. Niedrige Investition, läuft auch auf 7.5/7.52,
+              vermarktbar an Sparkassen und VR-Banken als x1F-Produkt.
+            </div>
+          </div>
+          <div class="recc-item">
+            <div class="recc-num">ii.</div>
+            <div class="recc-title">Pfad 3 als Sales-Demo</div>
+            <div class="recc-text">
+              Python-MCP-Wrapper um die ECL Posting Engine. In zwei Tagen
+              lauffähig, bei CFO-Pitches eindrucksvoll, kein Lizenzgespräch
+              nötig — schließt mit dem Sandbox-Posting im Live-Termin.
+            </div>
+          </div>
+          <div class="recc-item">
+            <div class="recc-num">iii.</div>
+            <div class="recc-title">Pfad 1 nur opportunistisch</div>
+            <div class="recc-text">
+              Wir gehen Pfad 1 nur, wenn der Kunde Integration Suite und Joule
+              bereits lizenziert hat. Sonst verlieren wir Zeit in
+              Lizenzgesprächen, in denen x1F nichts mehrert.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <!-- GUARDRAILS -->
+      <section class="guardrails">
+        <h3>
+          Vier Compliance-Guardrails — sonst sagt der Compliance-Officer „nein".
+        </h3>
+
+        <div class="guardrails-list">
+          <div class="guardrail">
+            <div class="guardrail-num">01</div>
+            <div class="guardrail-title">Idempotenzschlüssel pro Aufruf</div>
+            <div class="guardrail-text">
+              Serverseitig erzwungen, gegen Retry-Doppelpostings durch
+              fehlgeschlagene Streams.
+            </div>
+          </div>
+          <div class="guardrail">
+            <div class="guardrail-num">02</div>
+            <div class="guardrail-title">Pre-Authorization-Tool</div>
+            <div class="guardrail-text">
+              Separates Read-only-Tool vor jedem Schreibtool, prüft Berechtigung
+              &amp; Limits.
+            </div>
+          </div>
+          <div class="guardrail">
+            <div class="guardrail-num">03</div>
+            <div class="guardrail-title">Two-Phase-Pattern</div>
+            <div class="guardrail-text">
+              Tool 1 berechnet Vorschlag &amp; gibt Hash zurück. Tool 2
+              persistiert nach Approval.
+            </div>
+          </div>
+          <div class="guardrail">
+            <div class="guardrail-num">04</div>
+            <div class="guardrail-title">Application-Log mit Agent-ID</div>
+            <div class="guardrail-text">
+              Agent-ID + Prompt-Hash pro Posting im SLG1, abgreifbar durch
+              Innenrevision.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <div class="foot-left">
+          Interner Diskussionsentwurf · nicht zur Weitergabe.
+        </div>
+        <div class="foot-right">x1F · Custom Development SAP Team</div>
+      </footer>
+    </div>
   </body>
 </html>
+
