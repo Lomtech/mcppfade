@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Claude AI + SAP ABAP via MCP</title>
+    <style>
+      :root {
+        --primary: #2563eb;
+        --bg: #f8fafc;
+        --text: #1e293b;
+        --card: #ffffff;
+        --border: #e2e8f0;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      header {
+        padding: 60px 20px;
+        text-align: center;
+        background: linear-gradient(135deg, #e0f2fe, #ffffff);
+        border-bottom: 1px solid var(--border);
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      header p {
+        color: #64748b;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: auto;
+        padding: 40px 20px;
+      }
+
+      .section {
+        margin-bottom: 40px;
+      }
+
+      .section h2 {
+        margin-bottom: 15px;
+        color: var(--primary);
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      code,
+      pre {
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 10px;
+        border-radius: 8px;
+        display: block;
+        overflow-x: auto;
+        margin-top: 10px;
+        font-size: 0.9rem;
+      }
+
+      ul {
+        margin-left: 20px;
+        margin-top: 10px;
+      }
+
+      footer {
+        text-align: center;
+        padding: 30px;
+        color: #64748b;
+        border-top: 1px solid var(--border);
+        margin-top: 40px;
+      }
+
+      .badge {
+        display: inline-block;
+        background: #dbeafe;
+        color: var(--primary);
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        margin: 5px 5px 0 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Claude AI + SAP ABAP via MCP</h1>
+      <p>
+        Connect Claude AI directly to your SAP system using MCP (Model Context
+        Protocol) — read, modify, and manage ABAP objects via natural language.
+      </p>
+    </header>
+
+    <div class="container">
+      <div class="section">
+        <h2>🚀 What is MCP?</h2>
+        <div class="card">
+          <p>
+            MCP (Model Context Protocol) allows AI models to interact with real
+            systems.
+          </p>
+          <ul>
+            <li>Read ABAP code</li>
+            <li>Modify objects</li>
+            <li>Create transports</li>
+            <li>Run syntax checks</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🏗 Architecture</h2>
+        <div class="card">
+          <p>
+            <strong>Claude ↔ MCP Servers ↔ SAP ADT API ↔ SAP System</strong>
+          </p>
+          <ul>
+            <li>mcp-abap-adt → Read-only</li>
+            <li>mcp-abap-abap-adt-api → Full CRUD</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>📦 Prerequisites</h2>
+        <div class="card">
+          <ul>
+            <li>Windows 10/11</li>
+            <li>SAP system with ADT enabled</li>
+            <li>SAP_ADT_DEVELOPER role</li>
+            <li>Claude subscription</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>⚙️ Installation</h2>
+
+        <div class="card">
+          <h3>1. Install Node.js</h3>
+          <pre>
+node -v
+npm -v</pre
+          >
+        </div>
+
+        <div class="card">
+          <h3>2. Install Claude CLI</h3>
+          <pre>
+npm install -g @anthropic-ai/claude-code
+claude</pre
+          >
+        </div>
+
+        <div class="card">
+          <h3>3. Clone MCP Server</h3>
+          <pre>
+git clone https://github.com/mario-andreschak/mcp-abap-adt
+cd mcp-abap-adt
+npm install
+npm run build</pre
+          >
+        </div>
+
+        <div class="card">
+          <h3>4. Example .env</h3>
+          <pre>
+SAP_URL=https://your-system
+SAP_USERNAME=USER
+SAP_PASSWORD=PASS
+SAP_CLIENT=300</pre
+          >
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>💻 Claude Desktop Config</h2>
+        <div class="card">
+          <pre>
+{
+  "mcpServers": {
+    "mcp-abap-adt": {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": ["C:\\Tools\\mcp-abap-adt\\dist\\index.js"]
+    }
+  }
+}</pre
+          >
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🧪 Test Commands</h2>
+        <div class="card">
+          <pre>Get the source code of program SAPMV45A</pre>
+          <pre>Modify a Z program and activate it</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🔐 Security Notes</h2>
+        <div class="card">
+          <ul>
+            <li>Never commit .env files</li>
+            <li>Use dedicated service users</li>
+            <li>Test only in $TMP first</li>
+            <li>Review AI-generated code</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🏷 Tags</h2>
+        <div class="card">
+          <span class="badge">ABAP</span>
+          <span class="badge">SAP</span>
+          <span class="badge">AI</span>
+          <span class="badge">Claude</span>
+          <span class="badge">MCP</span>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>Built as a lightweight Onepager for SAP + AI integration 🚀</p>
+    </footer>
+  </body>
+</html>
